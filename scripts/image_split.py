@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-from scripts.metrics_calculation import matrix_multiply, matrix_transpose
+from metrics_calculation import matrix_multiply, matrix_transpose
 
 
 # --- 1. Ορισμός Σταθερών και Φόρτωση Εικόνας ---

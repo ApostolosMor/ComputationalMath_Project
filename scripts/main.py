@@ -15,6 +15,7 @@ from image_split import load_and_split_image, normalize_and_prepare_w, IMAGE_PAT
 from svd_core import calculate_eigens, calculate_svd_matrices
 from compression import reconstruct_channel, merge_and_save_image
 from evaluation import calculate_mse, calculate_compression_ratio
+from metrics_calculation import matrix_multiply,matrix_transpose,matrix_scalar_multiply
 
 # --- 1. Ορισμός Σταθερών Εκτέλεσης ---
 # Οι βαθμίδες προσέγγισης k που θα χρησιμοποιήσουμε για τη συμπίεση

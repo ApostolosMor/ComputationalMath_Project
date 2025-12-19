@@ -3,8 +3,6 @@ import numpy as np
 def matrix_multiply(A, B):
     """
     Υπολογίζει το γινόμενο C = A @ B χρησιμοποιώντας εμφωλευμένους βρόχους (loops).
-    
-    ΠΡΟΣΟΧΗ: Αυτή η μέθοδος είναι πολύ αργή για μεγάλους πίνακες (όπως κανάλια εικόνας).
     """
     
     # Έλεγχος συμβατότητας διαστάσεων
@@ -36,7 +34,6 @@ def matrix_multiply(A, B):
 def matrix_transpose(A):
     """
     Υπολογίζει τον ανάστροφο πίνακα A^T.
-    Μετατρέπει τις γραμμές σε στήλες χειροκίνητα.
     """
     M, N = A.shape
     # Ο ανάστροφος έχει διαστάσεις N x M
@@ -48,4 +45,20 @@ def matrix_transpose(A):
             A_T[j, i] = A[i, j]
             
     return A_T
+
+def matrix_scalar_multiply(A, scalar):
+    """
+    Πολλαπλασιάζει κάθε στοιχείο του πίνακα Α με έναν αριθμό (scalar).
+    Υλοποίηση με εμφωλευμένους βρόχους (loops).
+    """
+    M, N = A.shape
+    # Δημιουργία νέου πίνακα ίδιων διαστάσεων
+    result = np.zeros((M, N), dtype=np.float64)
+    
+    for i in range(M):
+        for j in range(N):
+            # Πολλαπλασιάζουμε το κάθε στοιχείο ξεχωριστά
+            result[i, j] = A[i, j] * scalar
+            
+    return result
 
