@@ -51,26 +51,3 @@ def normalize_and_prepare_w(A_channel):
     
     return A_norm, W
 
-
-# # --- 2. Κύριο Μέρος Προγράμματος (Δοκιμαστικό) ---
-# if __name__ == '__main__':
-    
-#     try:
-#         # 1. Φόρτωση και διαχωρισμός
-#         R_channel, G_channel, B_channel, original_shape = load_and_split_image(IMAGE_PATH)
-        
-#         # 2. Ομαλοποίηση και Υπολογισμός W για το Κόκκινο κανάλι
-#         R_norm, W_R = normalize_and_prepare_w(R_channel)
-        
-#         print("\nΤα κανάλια RGB έχουν εξαχθεί, ομαλοποιηθεί και υπολογιστεί ο W.")
-#         print(f"Διαστάσεις W_R: {W_R.shape}")
-        
-#         # Εμφάνιση αρχικής εικόνας για έλεγχο
-#         # Χρησιμοποιούμε τα ομαλοποιημένα κανάλια για εμφάνιση (τιμές 0-1)
-#         plt.imshow(np.dstack((R_norm, G_channel/255.0, B_channel/255.0)))
-#         plt.title('Αρχική Εικόνα (mario_clean.png)')
-#         plt.axis('off')
-#         plt.show()
-        
-#     except Exception as e:
-#         print(f"\nΑδυναμία ολοκλήρωσης του image_split.py.")
