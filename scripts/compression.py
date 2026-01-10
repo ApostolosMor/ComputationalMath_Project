@@ -1,71 +1,75 @@
 import numpy as np
 from PIL import Image
 
-def reconstruct_channel(U, S_vector, V, k):
+def reconstruct_channel_optimized(U, S_vector, V, k):
     """
-    Εφαρμόζει το Βήμα 5: Ανακατασκευή του πίνακα A_k για δοσμένο βαθμό k.
-    
-    A_k = sum_{i=1}^{k} (sigma_i * u_i * v_i^T)
-    
-    U: Ο πίνακας U (M x rank)
-    S_vector: Οι ιδιάζουσες τιμές (rank)
-    V: Ο πίνακας V (N x rank)
-    k: Ο βαθμός προσέγγισης (αριθμός ιδιάζουσων τιμών που χρησιμοποιούνται).
-    
-    Επιστρέφει: Ο πίνακας A_k (M x N)
+    Optimized reconstruction using direct outer product sum
+    Avoids full matrix multiplies for U_k @ diag(S_k) @ V_k.T
     """
+    M, N = U.shape[0], V.shape[0]
+    A_k = np.zeros((M, N), dtype=np.float64)
     
-    # Επειδή η SVD έχει ταξινομημένες τις τιμές, χρησιμοποιούμε μόνο τις πρώτες k
+    # Direct summation: A_k = Σ σ_i * u_i * v_iᵀ
+    for i in range(min(k, len(S_vector))):
+        sigma = S_vector[i]
+        u_i = U[:, i]
+        v_i = V[:, i]
+        
+        # Compute outer product efficiently
+        for row in range(M):
+            u_val = sigma * u_i[row]
+            # Use small inner loop for columns
+            for col in range(N):
+                A_k[row, col] += u_val * v_i[col]
     
-    # 1. Επιλογή των k κορυφαίων συνιστωσών
-    U_k = U[:, :k]
-    S_k = S_vector[:k]
-    V_k = V[:, :k]
-    
-    # 2. Ανακατασκευή του πίνακα A_k
-    # Ο ανακατασκευασμένος πίνακας A_k είναι: U_k @ np.diag(S_k) @ V_k.T
-    
-    # np.diag(S_k) δημιουργεί τον διαγώνιο πίνακα Σ_k
-    Sigma_k = np.diag(S_k)
-    
-    # Πολλαπλασιασμός: U_k (M x k) @ Sigma_k (k x k) -> (M x k)
-    # Αποτέλεσμα @ V_k.T (k x N) -> (M x N)
-    A_k = U_k @ Sigma_k @ V_k.T
-    #Temp = matrix_multiply(U_k, Sigma_k) 
-    # Πολλαπλασιασμός: A_k = Temp * V_k.T
-    #A_k = matrix_multiply(Temp, V_k.T)
-    
-    # 3. Απο-ομαλοποίηση (Denormalization) και Κλιμάκωση
-    # Οι τιμές A_k είναι στο [0, 1]. Τις ξαναφέρνουμε στο [0, 255].
+    # Denormalize and clip
     A_k_denorm = A_k * 255.0
-    
-    # Εξασφαλίζουμε ότι οι τιμές είναι ακέραιες (uint8) και εντός του εύρους [0, 255]
     A_k_clipped = np.clip(A_k_denorm, 0, 255).astype(np.uint8)
-    
     return A_k_clipped
 
+def reconstruct_channels_progressive(U, S, V, k_values):
+    """
+    Reconstruct for multiple k values efficiently
+    Reuses computations from smaller k to build larger k
+    """
+    k_values_sorted = sorted(k_values)
+    results = {}
+    
+    # Start with empty reconstruction
+    M, N = U.shape[0], V.shape[0]
+    current_reconstruction = np.zeros((M, N), dtype=np.float64)
+    current_k = 0
+    
+    for target_k in k_values_sorted:
+        # Add components from current_k to target_k
+        for i in range(current_k, min(target_k, len(S))):
+            sigma = S[i]
+            u_i = U[:, i]
+            v_i = V[:, i]
+            
+            # Add this component to current reconstruction
+            for row in range(M):
+                u_val = sigma * u_i[row]
+                for col in range(N):
+                    current_reconstruction[row, col] += u_val * v_i[col]
+        
+        # Store result for this k
+        A_k_denorm = current_reconstruction * 255.0
+        A_k_clipped = np.clip(A_k_denorm, 0, 255).astype(np.uint8)
+        results[target_k] = A_k_clipped
+        
+        current_k = target_k
+    
+    return results
+
 def merge_and_save_image(R_k, G_k, B_k, k, original_shape):
-    """
-    Εφαρμόζει το Βήμα 6: Επανένωση των τριών καναλιών και αποθήκευση της εικόνας.
-    """
-    
-    # Στοίβαξη των 3 καναλιών σε ένα 3D array
-    # np.dstack στοιβάζει τα arrays κατά τη τρίτη διάσταση (M x N x 3)
+    """Same as before"""
     compressed_image_np = np.dstack((R_k, G_k, B_k))
-    
-    # Μετατροπή του NumPy array σε αντικείμενο εικόνας PIL
     compressed_image = Image.fromarray(compressed_image_np, 'RGB')
-    
-    # Αποθήκευση εικόνας
     output_filename = f'compressed_k{k}.png'
     compressed_image.save(output_filename)
-    
     print(f"Εικόνα k={k} αποθηκεύτηκε ως: {output_filename}")
-    
     return compressed_image_np
 
-
-# --- ΔΟΚΙΜΑΣΤΙΚΟ ΜΕΡΟΣ ---
-if __name__ == '__main__':
-    print("Το compression.py περιέχει συναρτήσεις για Βήματα 5 & 6.")
-    print("Χρειάζεται να εισαχθεί σε κεντρικό script.")
+# Use optimized reconstruction
+reconstruct_channel = reconstruct_channel_optimized
