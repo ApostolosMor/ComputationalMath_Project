@@ -22,10 +22,7 @@ def load_and_split_image(image_path):
         raise
 
 def normalize_and_prepare_w(A_channel):
-    """
-    Optimized: Only normalize here, W calculation moved to main
-    to use optimized AᵀA computation
-    """
+
     A_norm = A_channel / 255.0
     # W will be computed separately using optimized function
     return A_norm  # Return only normalized matrix
