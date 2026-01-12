@@ -1,10 +1,7 @@
 import numpy as np
 
 def matrix_multiply_optimized(A, B, block_size=64):
-    """
-    Block-based matrix multiplication for better cache performance
-    Similar to composite integration methods
-    """
+
     # Check compatibility
     if A.shape[1] != B.shape[0]:
         raise ValueError(f"Dimensions not compatible: A {A.shape}, B {B.shape}")
@@ -44,9 +41,9 @@ def matrix_multiply_optimized(A, B, block_size=64):
     return C
 
 def matrix_transpose_optimized(A, block_size=64):
-    """
-    Cache-optimized transposition using block processing
-    """
+
+    #Cache-optimized transposition using block processing
+
     M, N = A.shape
     A_T = np.zeros((N, M), dtype=A.dtype)
     
@@ -63,10 +60,9 @@ def matrix_transpose_optimized(A, block_size=64):
     return A_T
 
 def matrix_multiply_A_transpose_A(A):
-    """
-    Specialized computation of W = AᵀA exploiting symmetry
-    Direct computation without full transpose
-    """
+
+    #Specialized computation of W = AᵀA exploiting symmetry
+
     M, N = A.shape
     W = np.zeros((N, N), dtype=A.dtype)
     
@@ -90,9 +86,7 @@ def matrix_multiply_A_transpose_A(A):
     return W
 
 def matrix_vector_multiply_optimized(A, v):
-    """
-    Optimized matrix-vector multiplication for U calculation
-    """
+    #Optimized matrix-vector multiplication for U calculation
     M, N = A.shape
     result = np.zeros(M, dtype=A.dtype)
     

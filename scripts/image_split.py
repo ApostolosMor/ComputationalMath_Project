@@ -1,12 +1,11 @@
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-# Remove unused imports to metrics_calculation since we compute W directly
 
 IMAGE_PATH = 'mario_clean.png'
 
 def load_and_split_image(image_path):
-    """Same as before"""
+
     try:
         img = Image.open(image_path).convert('RGB')
         img_np = np.array(img, dtype=np.float64)

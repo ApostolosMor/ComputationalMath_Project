@@ -116,7 +116,7 @@ def run_compression_pipeline_optimized():
         plt.tight_layout()
         plt.show()
         
-        print("\nΗ βελτιστοποιημένη διαδικασία συμπίεσης SVD ολοκληρώθηκε επιτυχώς.")
+        print("\nΗ διαδικασία συμπίεσης SVD ολοκληρώθηκε επιτυχώς.")
         
     except Exception as e:
         print(f"\nΔιαδικασία απέτυχε λόγω σφάλματος: {e}")

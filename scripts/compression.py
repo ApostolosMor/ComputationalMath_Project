@@ -2,10 +2,7 @@ import numpy as np
 from PIL import Image
 
 def reconstruct_channel_optimized(U, S_vector, V, k):
-    """
-    Optimized reconstruction using direct outer product sum
-    Avoids full matrix multiplies for U_k @ diag(S_k) @ V_k.T
-    """
+
     M, N = U.shape[0], V.shape[0]
     A_k = np.zeros((M, N), dtype=np.float64)
     
@@ -28,10 +25,7 @@ def reconstruct_channel_optimized(U, S_vector, V, k):
     return A_k_clipped
 
 def reconstruct_channels_progressive(U, S, V, k_values):
-    """
-    Reconstruct for multiple k values efficiently
-    Reuses computations from smaller k to build larger k
-    """
+
     k_values_sorted = sorted(k_values)
     results = {}
     
@@ -63,7 +57,6 @@ def reconstruct_channels_progressive(U, S, V, k_values):
     return results
 
 def merge_and_save_image(R_k, G_k, B_k, k, original_shape):
-    """Same as before"""
     compressed_image_np = np.dstack((R_k, G_k, B_k))
     compressed_image = Image.fromarray(compressed_image_np, 'RGB')
     output_filename = f'compressed_k{k}.png'
